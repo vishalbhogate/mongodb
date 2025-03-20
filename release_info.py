@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Get MongoDB credentials from env variables
+# Get MongoDB credentials from environment variables
 MONGODB_USERNAME = os.getenv("MONGODB_USERNAME", "sj_user")
 MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD", "securepassword")
 
@@ -32,11 +32,17 @@ def insert_audit_log(user, service_name, release_tag):
         collection.insert_one(log_entry)
         print("Log entry inserted successfully!")
 
-    except pymongo.errors.ConnectionError:
-        print("Failed to connect to MongoDB. Ensure it's running and accessible.")
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        # Handle MongoDB connection error
+        print(f"Error: Failed to connect to MongoDB. Please ensure MongoDB is running. Details: {e}")
+    except pymongo.errors.PyMongoError as e:
+        # Handle other MongoDB related errors (e.g., insertion errors)
+        print(f"Error: Failed to insert the log entry into MongoDB. Details: {e}")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        # General error handling
+        print(f"An unexpected error occurred while inserting the log: {e}")
     finally:
+        # Always close the MongoDB connection, even if an error occurred
         client.close()
 
 def show_entries():
@@ -50,15 +56,25 @@ def show_entries():
         # Fetch all documents from the collection
         entries = collection.find()
         
-        # Print each document in a formatted way
-        for entry in entries:
-            print(entry)
+        # Convert the cursor to a list and print the documents
+        entries_list = list(entries)
+        if len(entries_list) == 0:
+            print("No entries found in the audit_log collection.")
+        else:
+            for entry in entries_list:
+                print(entry)
     
-    except pymongo.errors.ConnectionError:
-        print("Failed to connect to MongoDB. Ensure it's running and accessible.")
+    except pymongo.errors.ServerSelectionTimeoutError as e:
+        # Handle MongoDB connection error
+        print(f"Error: Failed to connect to MongoDB. Please ensure MongoDB is running. Details: {e}")
+    except pymongo.errors.PyMongoError as e:
+        # Handle other MongoDB errors
+        print(f"Error: Failed to retrieve entries from MongoDB. Details: {e}")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        # General error handling
+        print(f"An unexpected error occurred while fetching the entries: {e}")
     finally:
+        # Always close the MongoDB connection, even if an error occurred
         client.close()
 
 # Parse command-line arguments

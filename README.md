@@ -10,8 +10,8 @@ To set up MongoDB in the Kind Kubernetes cluster, follow the instructions below.
 Clone this repository if you haven't already:
 
 ```sh
-git clone <your-repository-url>
-cd <your-repository-folder>
+git clone https://github.com/vishalbhogate/mongodb.git
+cd mongodb
 ```
 
 ### 2. Run the Setup Script
@@ -82,18 +82,6 @@ use sj_release     // Switch to the database
 show collections   // List all collections
 db.audit_log.find().pretty() // View documents in the collection
 ```
-
-## Automating This with a Script
-
-If you want this to run as part of a startup script, create a file `init-mongo.js` with the following content:
-
-```javascript
-db = db.getSiblingDB("sj_release");
-db.createCollection("audit_log");
-db.audit_log.insertOne({ msg: "Database initialized", time: new Date() });
-```
-
-Run it inside MongoDB:
 
 1. **Connect to MongoDB as Root:**
 ```sh
