@@ -133,7 +133,7 @@ Before running the script, set the environment variables:
 
 ```sh
 export MONGODB_USERNAME="sj_user"
-export MONGODB_PASSWORD="<Your-Password>"
+export MONGODB_PASSWORD="securepassword"
 ```
 
 ### 9. Run the Script
